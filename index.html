@@ -1,1 +1,219 @@
-teste
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orações Diárias — Cadastro Gratuito</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul:#1B3A6B;
+      --azul-lt:#2A4E8C;
+      --ouro:#C9A94E;
+      --ouro-lt:#E6C870;
+      --bg:#F4F0E8;
+      --white:#FFF;
+      --text:#2C2C2C;
+      --gray:#7A7A7A;
+      --border:#D5CEBC;
+      --success:#27AE60;
+    }
+
+    body {
+      font-family:'Nunito',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding-top:env(safe-area-inset-top);
+    }
+
+    .header {
+      background:var(--azul);
+      padding:18px;
+      text-align:center;
+      color:var(--ouro);
+      font-family:'Lora';
+      font-weight:700;
+    }
+
+    .hero {
+      background:linear-gradient(160deg,var(--azul),var(--azul-lt));
+      padding:32px 20px 50px;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:'✝';
+      position:absolute;
+      font-size:clamp(80px,25vw,160px);
+      color:rgba(255,255,255,0.03);
+      top:-10px;
+      right:-20px;
+    }
+
+    .hero h1{
+      font-family:'Lora';
+      color:#fff;
+      font-size:clamp(24px,6vw,32px);
+    }
+
+    .hero p{
+      color:#eee;
+      margin-top:10px;
+      font-size:14px;
+    }
+
+    .badge{
+      background:rgba(201,169,78,0.2);
+      border:1px solid rgba(201,169,78,0.4);
+      color:var(--ouro-lt);
+      padding:5px 12px;
+      border-radius:20px;
+      font-size:11px;
+      display:inline-block;
+      margin-bottom:12px;
+    }
+
+    .card{
+      background:#fff;
+      margin:-30px auto 20px;
+      padding:25px;
+      border-radius:20px;
+      max-width:480px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+      animation:fadeUp .5s ease;
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    input,select{
+      width:100%;
+      padding:14px;
+      margin-bottom:15px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      font-size:16px;
+    }
+
+    .radio-card{
+      border:1px solid var(--border);
+      padding:12px;
+      border-radius:12px;
+      margin-bottom:10px;
+      display:flex;
+      gap:10px;
+      cursor:pointer;
+      align-items:flex-start;
+    }
+
+    .radio-card:has(input:checked){
+      border-color:var(--azul);
+      background:#eef2ff;
+    }
+
+    .btn{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--azul),var(--azul-lt));
+      color:#fff;
+      font-weight:700;
+      font-size:16px;
+      cursor:pointer;
+      min-height:52px;
+    }
+
+    .success{
+      display:none;
+      text-align:center;
+    }
+
+    .footer{
+      text-align:center;
+      font-size:12px;
+      padding:20px;
+      color:#777;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">✝ Orações Diárias</div>
+
+<div class="hero">
+  <div class="badge">🎁 7 dias grátis</div>
+  <h1>Receba uma oração personalizada todos os dias</h1>
+  <p>Direto no seu WhatsApp às 6h</p>
+</div>
+
+<div class="card">
+
+<div id="form">
+  <input type="text" id="nome" placeholder="Seu nome" required>
+  <input type="email" id="email" placeholder="Seu email">
+  <input type="text" id="cidade" placeholder="Cidade">
+
+  <div class="radio-card">
+    <input type="radio" name="n" value="1">
+    <div>🕊️ Paz interior</div>
+  </div>
+
+  <div class="radio-card">
+    <input type="radio" name="n" value="2">
+    <div>❤️ Família</div>
+  </div>
+
+  <div class="radio-card">
+    <input type="radio" name="n" value="3">
+    <div>🌟 Financeiro</div>
+  </div>
+
+  <button class="btn" onclick="enviar()">🙏 Quero receber</button>
+</div>
+
+<div class="success" id="ok">
+  <h2>Cadastro realizado 🙏</h2>
+  <p>Você receberá sua oração no WhatsApp</p>
+</div>
+
+</div>
+
+<div class="footer">© 2026 Orações Diárias</div>
+
+<script>
+const webhook = "https://n8n.apicesystem.shop/webhook/novo-cadastro";
+
+function enviar(){
+  const nome = document.getElementById('nome').value;
+  const email = document.getElementById('email').value;
+  const cidade = document.getElementById('cidade').value;
+  const necessidade = document.querySelector('input[name="n"]:checked')?.value;
+
+  if(!nome || !necessidade){
+    alert("Preencha os campos obrigatórios");
+    return;
+  }
+
+  fetch(webhook,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({nome,email,cidade,necessidade})
+  });
+
+  document.getElementById('form').style.display="none";
+  document.getElementById('ok').style.display="block";
+}
+</script>
+
+</body>
+</html>
